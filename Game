@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Robot Battle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #222;
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+    .robot {
+      display: inline-block;
+      width: 200px;
+      margin: 20px;
+      padding: 20px;
+      border: 2px solid #555;
+      border-radius: 10px;
+      background: #333;
+    }
+    #log {
+      margin-top: 30px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #111;
+      padding: 10px;
+      border-radius: 10px;
+      height: 150px;
+      overflow-y: auto;
+      text-align: left;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      background: #0f0;
+      color: #000;
+      border: none;
+      border-radius: 5px;
+    }
+    button:disabled {
+      background: #444;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🤖 Robot Battle</h1>
+
+  <div class="robot" id="robot1">
+    <h2>Robot Alpha</h2>
+    <p>❤️ HP: <span id="hp1">100</span></p>
+  </div>
+
+  <div class="robot" id="robot2">
+    <h2>Robot Omega</h2>
+    <p>❤️ HP: <span id="hp2">100</span></p>
+  </div>
+
+  <button id="attackBtn">Aanvallen</button>
+
+  <div id="log"></div>
+
+  <script>
+    let robot1 = {
+      name: "Robot Alpha",
+      hp: 100
+    };
+
+    let robot2 = {
+      name: "Robot Omega",
+      hp: 100
+    };
+
+    let isPlayerTurn = true;
+    const attackBtn = document.getElementById("attackBtn");
+
+    function log(msg) {
+      const logDiv = document.getElementById("log");
+      logDiv.innerHTML += `<p>${msg}</p>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function updateHP() {
+      document.getElementById("hp1").textContent = robot1.hp;
+      document.getElementById("hp2").textContent = robot2.hp;
+    }
+
+    function getRandomDamage() {
+      return Math.floor(Math.random() * 20) + 5; // tussen 5 en 25
+    }
+
+    function attack(attacker, defender) {
+      const damage = getRandomDamage();
+      defender.hp = Math.max(0, defender.hp - damage);
+      log(`${attacker.name} valt aan en doet ${damage} schade aan ${defender.name}!`);
+      updateHP();
+    }
+
+    function checkGameOver() {
+      if (robot1.hp <= 0 || robot2.hp <= 0) {
+        const winner = robot1.hp > 0 ? robot1.name : robot2.name;
+        log(`🎉 ${winner} wint het gevecht!`);
+        attackBtn.disabled = true;
+        return true;
+      }
+      return false;
+    }
+
+    attackBtn.addEventListener("click", () => {
+      if (isPlayerTurn) {
+        attack(robot1, robot2);
+        isPlayerTurn = false;
+        if (!checkGameOver()) {
+          setTimeout(() => {
+            attack(robot2, robot1);
+            isPlayerTurn = true;
+            checkGameOver();
+          }, 1000);
+        }
+      }
+    });
+
+    log("Het gevecht is begonnen!");
+  </script>
+
+</body>
+</html>
